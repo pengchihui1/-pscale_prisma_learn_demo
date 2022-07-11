@@ -83,8 +83,10 @@ select user,host from user where user='root';
 mysql -u root -p 直接回车 进入mysql
 ```
 
-## portgr
-
+## PlanetScale简介
+1. PlanetScale 推出基于Vitess 的分布式MySQL 数据库服务
+2. PlanetScale 一个很有意思的云 MySQL 解决方案
+3. MySQL 已经证明自己在键值查找方面比Redis更快
 
 ### 在 Vercel 上部署
 
