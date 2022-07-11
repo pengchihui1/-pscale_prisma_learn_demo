@@ -3,7 +3,7 @@
 这是一个 [Next.js](https://nextjs.org/) 项目，它使用 [Prisma](https://www.prisma.io/) 连接到 [PlanetScale](https://planetscale.com/) 数据库和 [Tailwind CSS](https://tailwindcss.com/) 用于样式设置。
 
 ## 先决条件
-
+DATABASE_URL='postgresql://postgres@localhost:5432/prismatest'
 - [Node.js](https://nodejs.org/en/download/)
 - [PlanetScale CLI](https://github.com/planetscale/cli)
 
@@ -25,10 +25,15 @@ scoop安装：https://scoop.sh/
 > Set-ExecutionPolicy RemoteSigned -Scope CurrentUser # Optional: Needed to run a remote script the first time
 > irm get.scoop.sh | iex
 
+set-executionpolicy remotesigned -scope currentuser
+iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
+
 第二步
 scoop bucket add pscale https://github.com/planetscale/scoop-bucket.git
 scoop install pscale mysql
-scoop update pscale
+scoop install mysql
+
+如果发生了中断，下一次使用命令安装的时候会显示已安装，把C:\Users\<user name>下的scoop文件夹删掉就好了（重新打开vscode）
 
 pscale db create star-app --region 
 pscale branch create star-app initial-setup
@@ -43,24 +48,43 @@ npx prisma init
 第四步
 连接本地库
 npx prisma migrate dev --name init
-多开窗口
+
+安装mysql
+第五步（方式一）
 pscale auth login
-pscale connect prismatest initial-setup --port 5432
+pscale connect prismatest testdatabase  --port 3309
 npx prisma db push
+第五步（方式二）
+1. 复制数据库地址：DATABASE_URL='mysql://yn4j3bxzuy2y:pscale_pw_MHVgglNNEzXbliXZmJ-DCOK-xr95thuf9-2b_zmQ7Eg@vohp4fs7h07v.us-east-3.psdb.cloud/prismatest?sslaccept=strict'
+2. npx prisma db push
 
 ```
 
-## 部署
-
-在您的应用程序在本地运行后，就该部署它了。为此，您需要将数据库分支（默认为`main`）提升为生产分支（[阅读分支文档了解更多信息](https://docs.planetscale.com/concepts/branching) ）。
-
+## mysql安装流程
 ```
-pscale 分支提升 <DATABASE_NAME> <BRANCH_NAME>
+官网下载MSI客户端安装：https://cloud.tencent.com/developer/article/1636375
+环境变量bin目录配置
+
+root用户密码为空，设置密码(mysql版本8开头)
+1. set password ="root";
+2. mysql -u root -p; 回车输入密码
+
+root用户有密码但是要设置为空(mysql版本8开头)
+select user,host from user where user='root';
+1. use mysql; 使用mysql数据库
+2. update user set authentication_string='' where user='root'; 设置认证为空
+3. alter user "root"@"localhost" identified by '';  设置密码为空
+4. flush privileges; 修改生效
+注意：authentication_string 作为一个认证字符串
+注意：MySQL建用户的时候会指定一个host，默认是127.0.0.1/localhost只能本机访问； 
+其它机器用这个用户帐号访问会提示没有权限，host改为%，表示允许所有机器访问。
+
+成功后！
+mysql -u root -p 直接回车 进入mysql
 ```
 
-现在您的分支已升级到生产环境，您可以使用之前生成的现有密码在本地运行，也可以创建一个新密码。无论如何，您在下面的部署步骤中都需要密码。
+## portgr
 
-选择以下部署按钮之一，并确保在此设置过程中更新 `PLANETSCALE_PRISMA_DATABASE_URL` 变量。
 
 ### 在 Vercel 上部署
 
@@ -72,13 +96,3 @@ pscale 分支提升 <DATABASE_NAME> <BRANCH_NAME>
 
 [![部署到 Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github. com/planetscale/nextjs-starter)
 
-## 学到更多
-
-要了解有关 PlanetScale 的更多信息，请查看以下资源：
-
-- [PlanetScale 快速入门指南](https://docs.planetscale.com/tutorials/planetscale-quick-start-guide) - 了解如何开始使用 PlanetScale。
-
-## 下一步是什么？
-
-详细了解 PlanetScale 如何允许您对数据库表进行 [非阻塞模式更改](https://docs.planetscale.com/concepts/nonblocking-schema-changes)，而不会锁定或导致生产数据库停机。如果您有兴趣了解如何在连接到 PlanetScale 时保护您的应用程序，
-请阅读[连接
