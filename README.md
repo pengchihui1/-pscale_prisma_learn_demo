@@ -98,3 +98,38 @@ mysql -u root -p 直接回车 进入mysql
 
 [![部署到 Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github. com/planetscale/nextjs-starter)
 
+
+## 其它
+```
+1. yarn 安裝modules
+2. 到planetscale 請申一個帳號
+https://planetscale.com/
+
+3. 安裝 planetscale cli
+https://docs.planetscale.com/concepts/planetscale-environment-setup
+
+3. 用cli 建立db
+pscale db create my-db
+
+4. 建立db的branch
+pscale branch create my-db dev
+
+5. 在.env.local 設定 database url
+DATABASE_URL='mysql://root:@127.0.0.1:3309/my-db'
+
+6. 連接db
+pscale connect my-db dev --port 3309
+
+7. 開一個新的終端，把prisma資料放到planetscale
+npx prisma db push
+
+8. 檢查是否成功
+npx prisma studio
+
+9. 執行專案
+yarn dev
+
+10. step3 - step7 參考資料
+https://docs.planetscale.com/tutorials/prisma-quickstart
+```
+
